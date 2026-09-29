@@ -31,7 +31,7 @@ type checks (pyright) and tests (pytest):
 ### CI
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the same command on
-every pull request and on pushes to `main`
+every pull request and on pushes to `master`
 ([GitHub Actions docs](https://docs.github.com/en/actions)).
 
 ### Local-only data

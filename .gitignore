@@ -10,8 +10,10 @@ dist/
 .venv/
 
 # --- Tool caches --------------------------------------------------------------
-.pytest_cache/   # pytest https://docs.pytest.org/en/stable/how-to/cache.html
-.ruff_cache/     # ruff https://docs.astral.sh/ruff/
+# pytest cache: https://docs.pytest.org/en/stable/how-to/cache.html
+.pytest_cache/
+# ruff cache: https://docs.astral.sh/ruff/
+.ruff_cache/
 
 # --- Local-only data (never commit these; see README.md) -----------------------
 # Personal data
