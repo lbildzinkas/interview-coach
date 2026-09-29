@@ -1,0 +1,29 @@
+# GitHub Actions workflow docs: https://docs.github.com/en/actions
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - uses: actions/checkout@v7
+      # Installs uv and the pinned Python toolchain:
+      # https://github.com/astral-sh/setup-uv
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+      # Resolves dependencies from the committed uv.lock and creates the venv:
+      # https://docs.astral.sh/uv/reference/cli/#uv-sync
+      - name: Install dependencies
+        run: uv sync --locked
+      # Same script developers run locally; see scripts/check.sh
+      - name: Run all checks (ruff lint + format, pyright, pytest)
+        run: ./scripts/check.sh
