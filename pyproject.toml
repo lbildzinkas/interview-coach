@@ -45,7 +45,7 @@ select = [
 ]
 
 # --- Pyright: static type checker -------------------------------------------
-# Pyright configuration docs: https://microsoft.github.io/pyright/docs/configuration/
+# Pyright configuration docs: https://github.com/microsoft/pyright/blob/main/docs/configuration.md
 [tool.pyright]
 include = ["src", "tests"]
 pythonVersion = "3.13"
