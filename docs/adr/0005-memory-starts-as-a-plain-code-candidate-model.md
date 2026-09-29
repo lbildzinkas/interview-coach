@@ -1,0 +1,3 @@
+# Memory starts as a plain-code candidate model, and the grader never sees memory
+
+Long-term memory is split in two: a candidate model written by plain code from the grader's verdicts (per-topic mastery, review due dates, weak spots), which is cheap and well supported by tutoring research, and model-extracted memories (misconceptions, preferences, session summaries), which are error-prone and are added second and measured against no memory, full history and a memory library. Both live in LangGraph's own SQLite store rather than a memory library, so the mechanics are visible and testable. The grader never receives memory, because published studies show memory profiles make models more agreeable, and a coach that goes soft on the candidate defeats its purpose.
