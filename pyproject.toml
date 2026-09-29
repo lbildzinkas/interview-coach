@@ -6,7 +6,14 @@ description = "A LangGraph interview coach and study buddy with measured RAG, lo
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "langchain-openai>=1.6.6",  # https://python.langchain.com/docs/integrations/chat/openai/
+    "langgraph>=1.2.12",        # https://langchain-ai.github.io/langgraph/
+]
+
+# The `coach` command: https://docs.astral.sh/uv/concepts/projects/#entry-points
+[project.scripts]
+coach = "interview_coach.cli:main"
 
 [dependency-groups]
 # uv dependency groups docs: https://docs.astral.sh/uv/concepts/projects/#dependency-groups
