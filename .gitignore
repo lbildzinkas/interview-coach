@@ -16,6 +16,8 @@ dist/
 .ruff_cache/
 
 # --- Local-only data (never commit these; see README.md) -----------------------
+# Local configuration: the .env file holds the API key (.env.example is the template)
+.env
 # Personal data
 data/personal/*
 !data/personal/.gitkeep

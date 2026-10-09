@@ -19,6 +19,25 @@ dev tools — [ruff](https://docs.astral.sh/ruff/), [pyright](https://microsoft.
 and [pytest](https://docs.pytest.org/) — using the committed `uv.lock` so everyone
 gets the same versions.
 
+### Asking the coach a question
+
+`coach ask` sends one question through a one-node
+[LangGraph](https://langchain-ai.github.io/langgraph/) graph that calls
+GLM-5.3 on the GLM Coding Plan's OpenAI-compatible endpoint and prints the
+answer. Configuration lives in environment variables, loaded from a
+git-ignored `.env` file (copy [`.env.example`](.env.example) to `.env` and
+fill it in; a real environment variable wins over the file):
+
+- `INTERVIEW_COACH_API_KEY` — required, your GLM Coding Plan key
+- `INTERVIEW_COACH_BASE_URL` — optional, defaults to the coding endpoint on `open.bigmodel.cn`
+- `INTERVIEW_COACH_MODEL` — optional, defaults to `glm-5.3`
+
+```bash
+uv run coach ask "What is consistent hashing?"
+```
+
+Without a key, the command prints a readable error instead of a stack trace.
+
 ### Checks
 
 One command runs every check that CI also runs — lint and formatting (ruff),
