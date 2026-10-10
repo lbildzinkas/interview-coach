@@ -24,6 +24,8 @@ data/personal/*
 # Downloaded study material
 data/study-material/*
 !data/study-material/.gitkeep
+# Downloaded QASPER dataset cache (`coach qasper stats`)
+data/qasper/
 
 # --- Editors / OS ---------------------------------------------------------------
 .DS_Store

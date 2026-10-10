@@ -38,6 +38,18 @@ uv run coach ask "What is consistent hashing?"
 
 Without a key, the command prints a readable error instead of a stack trace.
 
+### Looking at QASPER
+
+`coach qasper stats` downloads the dev split of
+[QASPER](https://huggingface.co/datasets/allenai/qasper) (questions about NLP
+papers, CC BY 4.0) into the git-ignored `data/qasper/` folder, maps each
+answer's evidence to paragraph ids and prints how many questions fall in each
+category. No model is called and no API key is needed.
+
+```bash
+uv run coach qasper stats
+```
+
 ### Checks
 
 One command runs every check that CI also runs — lint and formatting (ruff),
@@ -61,6 +73,7 @@ git-ignored from the start:
 - `data/personal/` — personal data (your notes, transcripts, answers)
 - `data/study-material/` — downloaded study material (guides and pages to review,
   Anki decks)
+- `data/qasper/` — the downloaded QASPER dataset cache
 
 ## Downloading the study material
 
