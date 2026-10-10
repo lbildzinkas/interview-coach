@@ -61,8 +61,22 @@ def test_the_committed_sources_list_validates() -> None:
         "system-design-primer-solutions",
         "system-design-primer-anki",
         "tech-interview-handbook",
+        "ai-engineering-field-guide",
+        "ml-interviews-book",
+        "aie-book",
+        "machine-learning-interviews",
+        "llm-course",
+        "agents-course",
+        "generative-ai-for-beginners",
+        "ai-agents-for-beginners",
     }
     assert all(not path.startswith("images/") for s in sources for path in s.files)
+    # English text only: no translation folders from the multilingual repositories.
+    translated = ("translations/", "translated_images/", "Translation/", "cn/", "fa/")
+    assert not [p for s in sources for p in s.files if p.startswith(translated)]
+    assert not [p for s in sources for p in s.files if p.startswith("units/") and "/en/" not in p]
+    # No licence means all rights reserved: such material may only be read locally.
+    assert all(s.local_only for s in sources if s.licence == "NONE")
 
 
 @pytest.mark.parametrize(
