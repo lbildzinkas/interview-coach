@@ -69,6 +69,11 @@ into the git-ignored `data/study-material/` folder, each file pinned to a commit
 It is safe to run twice: sources already downloaded are skipped. Credits are in
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
+The list covers system design, behavioural interviews and AI engineering
+(about 3 MB of English text, no images or translations). Sources with no
+licence are marked `local_only` and printed as "(local only)": read them on
+your machine, but never commit or share anything taken from them.
+
 ```bash
 uv run coach setup
 ```
