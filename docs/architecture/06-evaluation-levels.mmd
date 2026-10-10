@@ -1,0 +1,57 @@
+---
+config:
+  layout: elk
+---
+%% Evaluation levels: what is tested, how it is judged, and when it runs.
+%% Sources: CONTEXT.md (evaluation set, grader, label), ADR-0001 (quota), ADR-0004 (testable policy).
+flowchart LR
+    subgraph legend["Legend"]
+        direction TB
+        lgBuilt["Built"]:::built
+        lgReview["In review<br>open pull request"]:::review
+        lgPlanned["Planned<br>milestone named"]:::planned
+    end
+
+    subgraph tested["What is tested"]
+        direction TB
+        tools["Tools tested alone<br>config, model factory,<br>graph with a fake chat model"]:::built
+        qasperTools["QASPER loader<br>tested alone"]:::review
+        searchTools["Search tools tested alone<br>metrics and retrievers<br>on small fixtures<br>M0"]:::planned
+        loop["The loop and tool choice<br>scripted candidates,<br>node-path tests<br>M3"]:::planned
+    end
+
+    subgraph judged["How results are judged"]
+        direction TB
+        asserts["Deterministic assertions<br>pytest"]:::built
+        metrics["Deterministic metrics<br>recall@k, citation validity,<br>stop-rule accuracy<br>M0 to M3"]:::planned
+        modelGrader["Model grader<br>GLM-5.3-Flash, calibrated<br>against the owner's labels<br>M2 to M3"]:::planned
+    end
+
+    subgraph everyPr["Every pull request, no model calls"]
+        direction TB
+        check["scripts/check.sh in CI<br>lint, format, types, tests"]:::built
+        replay["Recorded model replies<br>replayed: study answer,<br>interview, debrief<br>M6"]:::planned
+        searchGate["Search-quality gate<br>M6"]:::planned
+    end
+
+    subgraph onDemand["Nightly or on demand"]
+        graded["Graded suites<br>faithfulness, interview grading,<br>end-to-end sample<br>cap on model calls,<br>stop on exhausted quota<br>M6"]:::planned
+    end
+
+    undecided["Undecided: whether graded<br>suites also run on a schedule<br>in GitHub Actions, which<br>spends plan quota from CI"]:::note
+
+    tools --> asserts
+    asserts --> check
+    qasperTools -.-> asserts
+    searchTools -.-> metrics
+    loop -.-> metrics
+    loop -.-> replay
+    metrics -.-> searchGate
+    metrics -.-> graded
+    modelGrader -.-> graded
+    graded -.- undecided
+
+    classDef built fill:#d1fae5,stroke:#047857,color:#064e3b
+    classDef review fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef planned fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 3
+    classDef note fill:#ffffff,stroke:#9ca3af,color:#4b5563

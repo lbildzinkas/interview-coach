@@ -9,6 +9,10 @@ dist/
 # The virtualenv is local; uv.lock IS committed (https://docs.astral.sh/uv/concepts/projects/)
 .venv/
 
+# --- Node (only the pinned mermaid-cli, see package.json) -------------------
+# package-lock.json IS committed; node_modules/ is installed by `npm ci`
+node_modules/
+
 # --- Tool caches --------------------------------------------------------------
 # pytest cache: https://docs.pytest.org/en/stable/how-to/cache.html
 .pytest_cache/

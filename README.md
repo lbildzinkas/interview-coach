@@ -2,6 +2,8 @@
 
 Learning project: a LangGraph interview coach and study buddy with measured RAG, long-term memory and evaluation at every level
 
+Architecture diagrams of the whole planned system, marking what is built: [`docs/architecture/`](docs/architecture/README.md).
+
 ## Development
 
 This project is managed with [uv](https://docs.astral.sh/uv/) on Python 3.13.

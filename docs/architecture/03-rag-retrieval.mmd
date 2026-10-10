@@ -1,0 +1,44 @@
+%% RAG retrieval: from a study-mode question to an answer with sources.
+%% Sources: ADR-0003 (hybrid search, RRF, cross-encoder re-ranking), ADR-0001 (GLM, JSON mode).
+flowchart LR
+    subgraph legend["Legend"]
+        direction LR
+        lgBuilt["Built"]:::built
+        lgPlanned["Planned<br>milestone named"]:::planned
+    end
+
+    question["Candidate question<br>from /study<br>M0"]:::planned
+
+    subgraph hybrid["Hybrid search in LanceDB, M0"]
+        vector["Vector search<br>bge-small query embedding"]:::planned
+        keyword["Keyword search<br>full-text BM25"]:::planned
+    end
+
+    rrf["Reciprocal rank fusion<br>score = sum of<br>1 / (k + rank)<br>M0"]:::planned
+    rerank["Re-rank the fused top 30<br>gte-reranker-<br>modernbert-base<br>M0"]:::planned
+    topk["Top-k chunks with citations<br>chunk id, source, URL,<br>heading path<br>M0"]:::planned
+    prompt["Answer prompt<br>numbered chunks,<br>JSON mode, Pydantic<br>M0"]:::planned
+    glm["GLM-5.3"]:::built
+    answer["Answer with sources<br>citations must point<br>at retrieved chunks<br>M0"]:::planned
+
+    baseline["Long-context baseline<br>whole source document<br>in the prompt,<br>standing comparison<br>M2"]:::planned
+    compare["Same grader scores<br>both arms, paired by<br>question, with quota cost<br>M2"]:::planned
+    undecided["Undecided: LanceDB<br>built-in hybrid against<br>hand-written fusion M1,<br>evidence check and<br>abstention M2, may<br>reshape this path"]:::note
+
+    question -.-> vector
+    question -.-> keyword
+    vector -.-> rrf
+    keyword -.-> rrf
+    rrf -.-> rerank
+    rerank -.-> topk
+    topk -.-> prompt
+    prompt -.-> glm
+    glm -.-> answer
+    question -.-> baseline
+    baseline -.-> glm
+    answer -.-> compare
+    rrf -.- undecided
+
+    classDef built fill:#d1fae5,stroke:#047857,color:#064e3b
+    classDef planned fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 3
+    classDef note fill:#ffffff,stroke:#9ca3af,color:#4b5563
