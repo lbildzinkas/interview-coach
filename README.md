@@ -59,7 +59,8 @@ Two folders hold data that never leaves your machine; their contents are
 git-ignored from the start:
 
 - `data/personal/` — personal data (your notes, transcripts, answers)
-- `data/study-material/` — downloaded study material (PDFs, pages to review)
+- `data/study-material/` — downloaded study material (guides and pages to review,
+  Anki decks)
 
 ## Downloading the study material
 
@@ -75,4 +76,3 @@ uv run coach setup
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
