@@ -40,6 +40,9 @@ def _url_template(url: str) -> str:
     fields = {field for _, field, _, _ in string.Formatter().parse(url) if field is not None}
     if fields != {"commit", "path"}:
         raise ValueError("download_url must contain only the {commit} and {path} placeholders")
+    # Characters http.client refuses in a URL, raising InvalidURL deep in urlopen.
+    if any(char <= " " or char == "\x7f" for char in url):
+        raise ValueError("download_url must not contain whitespace or control characters")
     return url
 
 

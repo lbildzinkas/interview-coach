@@ -61,11 +61,7 @@ git-ignored from the start:
 - `data/personal/` — personal data (your notes, transcripts, answers)
 - `data/study-material/` — downloaded study material (PDFs, pages to review)
 
-## License
-
-MIT — see [LICENSE](LICENSE).
-
-### Downloading the study material
+## Downloading the study material
 
 `coach setup` downloads the study material named in [`sources.yaml`](sources.yaml)
 into the git-ignored `data/study-material/` folder, each file pinned to a commit.
@@ -75,3 +71,8 @@ It is safe to run twice: sources already downloaded are skipped. Credits are in
 ```bash
 uv run coach setup
 ```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+

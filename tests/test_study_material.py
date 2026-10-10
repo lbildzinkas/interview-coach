@@ -183,3 +183,14 @@ def test_coach_setup_with_an_unknown_placeholder_prints_a_readable_error(
     (tmp_path / "sources.yaml").write_text(yaml.safe_dump(sources))
     assert main(["setup"]) == 1
     assert "coach: error:" in capsys.readouterr().err
+
+
+def test_coach_setup_with_whitespace_in_the_url_prints_a_readable_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    url = "https://example.com/my folder/{commit}/{path}"
+    sources = {"sources": [source_data(download_url=url)]}
+    (tmp_path / "sources.yaml").write_text(yaml.safe_dump(sources))
+    assert main(["setup"]) == 1
+    assert "coach: error:" in capsys.readouterr().err
