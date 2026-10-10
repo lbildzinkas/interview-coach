@@ -42,8 +42,8 @@ Without a key, the command prints a readable error instead of a stack trace.
 
 ### Checks
 
-One command runs every check that CI also runs — lint and formatting (ruff),
-type checks (pyright) and tests (pytest):
+One command runs the Python checks — lint and formatting (ruff), type checks
+(pyright) and tests (pytest):
 
 ```bash
 ./scripts/check.sh
@@ -52,7 +52,9 @@ type checks (pyright) and tests (pytest):
 ### CI
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the same command on
-every pull request and on pushes to `master`
+every pull request and on pushes to `master`, and a second job that checks the
+[architecture diagrams](docs/architecture/README.md) still render and their
+committed PNGs are current
 ([GitHub Actions docs](https://docs.github.com/en/actions)).
 
 ### Local-only data
