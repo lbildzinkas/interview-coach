@@ -117,10 +117,8 @@ def load_validation_questions(cache_dir: Path = CACHE_DIR) -> list[Question]:
 
 def format_stats(questions: list[Question]) -> str:
     counts = Counter(question.category for question in questions)
-    some_unmapped = sum(1 for question in questions if question.unmapped_evidence)
     lines = [f"QASPER dev split: {len(questions)} questions"]
     lines += [f"  {category}: {counts[category]}" for category in CATEGORIES]
-    lines.append(f"questions with an evidence string that did not map: {some_unmapped}")
     return "\n".join(lines)
 
 
@@ -140,8 +138,14 @@ def _map_question(
     ids: set[str] = set()
     unmapped: list[str] = []
     for item in evidence:
-        if not item or item.startswith(FIGURE_MARKER) or item in headings:
-            continue  # empty, a table or figure, or a bare section heading: dropped
+        if not item or item.startswith(FIGURE_MARKER):
+            continue  # empty, a table or figure: dropped
+        # A heading is dropped only from the mapped paragraphs, never from the evidence
+        # list: evidence that maps to no paragraph (headings included) leaves the
+        # question unmappable rather than evidence-less.
+        if item in headings:
+            unmapped.append(item)
+            continue
         paragraph = _containing_paragraph(item, paragraphs)
         if paragraph is None:
             unmapped.append(item)

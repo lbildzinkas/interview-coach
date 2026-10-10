@@ -44,8 +44,8 @@ PAPER: dict[str, Any] = {
         "answers": [
             # Two annotators: a fragment of the intro and a whole paragraph (union kept).
             {"answer": [answer("Attention weighs every token."), answer(RESULTS)]},
-            # A bare heading part is dropped; the paragraph still maps.
-            {"answer": [answer("Setup", SETUP)]},
+            # A bare heading maps to no paragraph, so heading-only evidence is unmappable.
+            {"answer": [answer("Setup")]},
             {"answer": [answer("FLOAT SELECTED: Table 1: Accuracy per epoch.")]},
             # Every annotator marks it unanswerable.
             {"answer": [answer(unanswerable=True), answer(unanswerable=True)]},
@@ -81,10 +81,11 @@ def test_substring_evidence_maps_to_its_paragraph_with_union_over_annotators(
     assert question.category == ANSWERABLE
 
 
-def test_heading_evidence_is_dropped(questions: dict[str, Question]) -> None:
+def test_heading_only_evidence_is_unmappable(questions: dict[str, Question]) -> None:
     question = questions["q-heading"]
-    assert question.evidence_paragraph_ids == {"0000.00001:1"}
-    assert question.unmapped_evidence == ()
+    assert question.evidence_paragraph_ids == frozenset()
+    assert question.unmapped_evidence == ("Setup",)
+    assert question.category == UNMAPPABLE
 
 
 def test_figure_only_evidence_maps_to_no_paragraph(questions: dict[str, Question]) -> None:
@@ -126,8 +127,7 @@ def test_stats_command_prints_every_category(
     output = capsys.readouterr().out
     assert output == format_stats(extract_questions(PAPER)) + "\n"
     assert "QASPER dev split: 5 questions" in output
-    assert f"  {ANSWERABLE}: 2" in output
+    assert f"  {ANSWERABLE}: 1" in output
     assert f"  {FIGURE_ONLY}: 1" in output
     assert f"  {UNANSWERABLE}: 1" in output
-    assert f"  {UNMAPPABLE}: 1" in output
-    assert "did not map: 1" in output
+    assert f"  {UNMAPPABLE}: 2" in output
