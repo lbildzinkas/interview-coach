@@ -45,7 +45,8 @@ def _setup() -> int:
         run_setup()
     except (OSError, ValueError) as error:
         # Network errors are OSError (urllib.error.URLError); a bad sources list is
-        # a ValueError (pydantic.ValidationError subclasses it).
+        # a ValueError (load_sources wraps invalid YAML, and pydantic.ValidationError
+        # subclasses it).
         print(f"coach: error: {error}", file=sys.stderr)
         return 1
     return 0

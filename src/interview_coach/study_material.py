@@ -8,6 +8,7 @@ Pydantic models below (https://docs.pydantic.dev/latest/concepts/models/).
 """
 
 import os
+import string
 import urllib.parse
 import urllib.request
 from pathlib import Path, PurePosixPath
@@ -35,8 +36,10 @@ def _relative_text_path(path: str) -> str:
 
 
 def _url_template(url: str) -> str:
-    if "{commit}" not in url or "{path}" not in url:
-        raise ValueError("download_url must contain {commit} and {path}")
+    # The exact placeholder set, so url_for's str.format can never fail.
+    fields = {field for _, field, _, _ in string.Formatter().parse(url) if field is not None}
+    if fields != {"commit", "path"}:
+        raise ValueError("download_url must contain only the {commit} and {path} placeholders")
     return url
 
 
@@ -76,8 +79,12 @@ class SourcesList(BaseModel):
 
 
 def load_sources(path: Path = SOURCES_FILE) -> SourcesList:
-    """Read and validate the sources list; raises pydantic.ValidationError."""
-    return SourcesList.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
+    """Read and validate the sources list; raises ValueError if it is not."""
+    try:
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as error:
+        raise ValueError(f"{path} is not valid YAML: {error}") from error
+    return SourcesList.model_validate(document)
 
 
 def download_source(source: Source, data_dir: Path = DATA_DIR) -> bool:

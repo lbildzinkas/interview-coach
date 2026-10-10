@@ -75,6 +75,7 @@ def test_the_committed_sources_list_validates() -> None:
         {"files": []},
         {"name": "Not A Slug"},
         {"download_url": "https://example.com/README.md"},
+        {"download_url": "https://example.com/{commit}/{path}/{oops}"},
         {"unknown_key": True},
     ],
 )
@@ -162,3 +163,23 @@ def test_coach_setup_without_a_sources_list_prints_a_readable_error(
     monkeypatch.chdir(tmp_path)
     assert main(["setup"]) == 1
     assert "sources.yaml" in capsys.readouterr().err
+
+
+def test_coach_setup_with_malformed_yaml_prints_a_readable_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "sources.yaml").write_text("sources:\n\t- name: tab-indented\n")
+    assert main(["setup"]) == 1
+    assert "coach: error:" in capsys.readouterr().err
+
+
+def test_coach_setup_with_an_unknown_placeholder_prints_a_readable_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    url = "https://example.com/{commit}/{path}/{oops}"
+    sources = {"sources": [source_data(download_url=url)]}
+    (tmp_path / "sources.yaml").write_text(yaml.safe_dump(sources))
+    assert main(["setup"]) == 1
+    assert "coach: error:" in capsys.readouterr().err
