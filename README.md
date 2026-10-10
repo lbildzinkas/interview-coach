@@ -86,6 +86,21 @@ It is safe to run twice: sources already downloaded are skipped. Credits are in
 uv run coach setup
 ```
 
+### Chunking the study material
+
+`coach chunks stats` splits the downloaded markdown at its h1-h4 headings,
+prefixes each chunk with its heading path (for example
+`The System Design Primer > Database > ... > Master-slave replication`), drops the
+Primer's "Source(s) and further reading" link lists and the Handbook's MDX
+components, merges sections under 50 tokens into their parent and splits any over
+512 tokens again. It prints the chunk count and size spread per source. Chunk ids
+such as `system-design-primer-text@ae9bbd7:README.md#56` come from the pinned
+commit and the chunk's position, so they are the same on every run.
+
+```bash
+uv run coach chunks stats
+```
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

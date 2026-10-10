@@ -1,4 +1,5 @@
-"""The `coach` CLI: `coach ask "<question>"`, `coach setup` and `coach qasper stats`."""
+"""The `coach` CLI: `coach ask "<question>"`, `coach setup`, `coach qasper stats` and
+`coach chunks stats`."""
 
 import argparse
 import sys
@@ -6,6 +7,7 @@ from collections.abc import Callable, Sequence
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from interview_coach.chunking import run_stats
 from interview_coach.config import MissingApiKeyError, Settings, load_settings
 from interview_coach.graph import ask
 from interview_coach.model import build_model
@@ -26,10 +28,16 @@ def main(argv: Sequence[str] | None = None, model_factory: ModelFactory = build_
     qasper_parser = subcommands.add_parser("qasper", help="look at the QASPER dataset")
     qasper_commands = qasper_parser.add_subparsers(dest="qasper_command", required=True)
     qasper_commands.add_parser("stats", help="count QASPER dev questions per evidence category")
+    chunks_parser = subcommands.add_parser("chunks", help="split the study material into chunks")
+    chunks_commands = chunks_parser.add_subparsers(dest="chunks_command", required=True)
+    chunks_commands.add_parser("stats", help="count chunks and their sizes per source")
     args = parser.parse_args(argv)
 
     if args.command == "setup":
         return _setup()
+
+    if args.command == "chunks":
+        return _chunks_stats()
 
     if args.command == "qasper":  # no model is called, so no API key is needed
         print(format_stats(load_validation_questions()))
@@ -55,6 +63,17 @@ def _setup() -> int:
         # Network errors are OSError (urllib.error.URLError); a bad sources list is
         # a ValueError (load_sources wraps invalid YAML, and pydantic.ValidationError
         # subclasses it).
+        print(f"coach: error: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def _chunks_stats() -> int:
+    """`coach chunks stats`: reads the downloaded study material; no model, no API key."""
+    try:
+        print(run_stats())
+    except (OSError, ValueError) as error:
+        # A source not yet downloaded is a FileNotFoundError, an OSError.
         print(f"coach: error: {error}", file=sys.stderr)
         return 1
     return 0
