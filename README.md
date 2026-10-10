@@ -50,6 +50,20 @@ category. No model is called and no API key is needed.
 uv run coach qasper stats
 ```
 
+### Measuring search on QASPER
+
+`coach eval qasper --retriever random` ranks each paper's paragraphs at random
+for every question with text evidence and prints hit@k, recall@k,
+all-evidence@k, precision@k, MRR@k and nDCG@k, averaged over those questions.
+The metrics are written by hand in
+[`src/interview_coach/metrics.py`](src/interview_coach/metrics.py) and checked
+against [ranx](https://amenra.github.io/ranx/) in the tests. The random ranking
+is seeded, so the numbers repeat; it is the floor a real search must beat.
+
+```bash
+uv run coach eval qasper --retriever random
+```
+
 ### Checks
 
 One command runs every check that CI also runs — lint and formatting (ruff),
