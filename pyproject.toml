@@ -25,6 +25,7 @@ coach = "interview_coach.cli:main"
 dev = [
     "pyright>=1.1.402",  # https://microsoft.github.io/pyright/
     "pytest>=8.4",       # https://docs.pytest.org/en/stable/
+    "ranx>=0.3.21",      # cross-checks the hand-written search metrics: https://amenra.github.io/ranx/
     "ruff>=0.13",        # https://docs.astral.sh/ruff/
 ]
 
