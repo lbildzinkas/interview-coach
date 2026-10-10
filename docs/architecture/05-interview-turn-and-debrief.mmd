@@ -1,0 +1,48 @@
+%% Interview-mode turn and debrief.
+%% Sources: CONTEXT.md (interview mode, memory), ADR-0004 (code decides the flow), ADR-0005 (memory).
+sequenceDiagram
+    actor C as Candidate
+    box rgb(243,244,246) Planned M3
+        participant G as Interview graph
+        participant Q as Question card
+        participant I as Interviewer, GLM-5.3
+        participant F as Grader, GLM-5.3-Flash
+    end
+    box rgb(243,244,246) Planned M4
+        participant S as Memory, SQLite store
+    end
+
+    Note over C,S: Legend: grey box planned with its milestone. Nothing here is built yet, the walking skeleton has no interview mode.
+    C->>G: /interview, then choose a track
+    G->>Q: load a question card for the track
+    Q-->>G: question, level anchors, rubric checks, probes
+    G->>I: phrase the opening question
+    I-->>G: question text
+    G-->>C: opening question, graph waits on an interrupt
+    loop until deep enough, stuck, or the budget is spent
+        alt candidate answers
+            C->>G: answer
+            G->>F: grade yes or no per rubric check, with a quote
+            F-->>G: verdicts, new correct content, says they do not know
+            Note over G: plain-code policy picks probe, hint, move on or stop
+            G->>I: phrase the next probe or question
+            I-->>G: question text
+            G-->>C: probe or next question
+        else candidate types /hint
+            C->>G: /hint
+            G->>G: climb the hint ladder for this skill
+            Note over G: record the hint used, it caps this skill's level
+            G-->>C: next hint, from a nudge down to the answer itself
+        end
+    end
+    Note over C,F: the session ends and the debrief starts
+    par one isolated grader call per rubric check, fanned out with Send
+        G->>F: rubric check 1
+    and
+        G->>F: rubric check n
+    end
+    F-->>G: final verdicts with quotes
+    G->>G: level roll-up in plain code, capped by hints used
+    G-->>C: debrief with verdicts, level, hints used, gaps, reference answer
+    G->>S: deferred write after the debrief is shown, session record and candidate model
+    Note over F,S: the grader never receives memory

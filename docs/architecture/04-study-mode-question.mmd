@@ -1,0 +1,28 @@
+%% Study-mode question: one /study question answered with sources.
+%% Sources: CONTEXT.md (study mode), ADR-0001 (JSON mode), ADR-0003 (search), ADR-0004 (slash commands).
+sequenceDiagram
+    actor C as Candidate
+    box rgb(209,250,229) Built
+        participant CLI as Terminal CLI
+        participant G as LangGraph graph
+    end
+    box rgb(243,244,246) Planned M0
+        participant R as Retriever, LanceDB hybrid
+        participant RR as Re-ranker
+    end
+    box rgb(209,250,229) Built
+        participant M as GLM-5.3
+    end
+
+    Note over C,M: Legend: green box built, grey box planned with its milestone. Today coach ask sends the question straight to GLM-5.3.
+    C->>CLI: /study how does a CDN work?
+    CLI->>G: question, routed to study mode by plain code
+    G->>R: hybrid search, vector and keyword, fused with RRF
+    R-->>G: fused top 30 chunks
+    G->>RR: score the question against each chunk
+    RR-->>G: top-k chunks with ids and links
+    G->>M: answer prompt with numbered chunks, JSON mode
+    M-->>G: JSON answer with citations
+    G->>G: validate with Pydantic, retry once, reject unknown citations
+    G-->>CLI: answer with sources
+    CLI-->>C: printed answer with citation links

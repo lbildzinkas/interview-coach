@@ -1,0 +1,94 @@
+---
+config:
+  layout: elk
+---
+%% Overall architecture: what runs where, and what is built today.
+%% Sources: CONTEXT.md and ADRs 0001-0005 in docs/adr/.
+flowchart LR
+    subgraph legend["Legend"]
+        direction TB
+        lgBuilt["Built"]:::built
+        lgReview["In review<br>open pull request"]:::review
+        lgPlanned["Planned<br>milestone named"]:::planned
+        lgArrows["Solid arrow: built path<br>Dashed arrow: planned path"]:::note
+    end
+
+    candidate(["Candidate<br>at the terminal"])
+    cli["Terminal CLI<br>coach ask"]:::built
+
+    subgraph app["LangGraph application"]
+        direction TB
+        askGraph["One-node answer graph<br>coach ask"]:::built
+        router["Slash-command router<br>/study and /interview<br>M0"]:::planned
+        study["Study mode<br>search, cite, quiz<br>M0 to M2"]:::planned
+        interview["Interview mode<br>plain-code policy,<br>probes, hint ladder<br>M3"]:::planned
+        debrief["Debrief<br>per-check grading,<br>level roll-up<br>M3"]:::planned
+    end
+
+    subgraph retrieval["Retrieval subsystem"]
+        direction TB
+        setup["coach setup<br>download from<br>the sources list"]:::review
+        searchIndex["LanceDB index<br>bge-small vectors<br>and full text<br>M0"]:::planned
+        reranker["Re-ranker<br>gte-reranker-<br>modernbert-base<br>M0"]:::planned
+    end
+
+    subgraph llm["GLM Coding Plan endpoint, OpenAI-compatible"]
+        direction TB
+        factory["build_model: ChatOpenAI<br>tool_choice and<br>parallel_tool_calls dropped"]:::built
+        glm["GLM-5.3<br>answers and<br>interview questions"]:::built
+        flash["GLM-5.3-Flash<br>graders, simulated<br>candidate, drafts<br>M1 to M3"]:::planned
+    end
+
+    graders["Graders<br>faithfulness M2,<br>rubric checks M3,<br>never see memory"]:::planned
+
+    subgraph memory["Memory in LangGraph SQLite"]
+        direction TB
+        checkpointer["Checkpointer<br>resume an interview<br>M3"]:::planned
+        candidateModel["Store: candidate model<br>mastery, review dates,<br>weak spots<br>M4"]:::planned
+        flashcards["Flashcards<br>scheduled by fsrs<br>M4"]:::planned
+    end
+
+    subgraph localData["Local only, git-ignored"]
+        direction TB
+        personal[("data/personal/<br>transcripts, debriefs,<br>memory")]:::built
+        material[("data/study-material/<br>downloaded<br>study material")]:::built
+    end
+
+    subgraph evaluation["Evaluation harness"]
+        direction TB
+        qasper["QASPER loader<br>M0"]:::review
+        searchMetrics["Search metrics<br>QASPER, then<br>evaluation set v1<br>M0 to M1"]:::planned
+        suites["Graded suites and<br>recorded replies<br>M2 to M6"]:::planned
+    end
+
+    phoenix["Phoenix tracing<br>local, opt-in<br>M2"]:::planned
+    undecided["Undecided, not drawn:<br>free-text routing M8,<br>topic graph M7"]:::note
+
+    candidate --> cli
+    cli --> askGraph
+    askGraph --> factory
+    factory --> glm
+    cli -.-> router
+    router -.-> study
+    router -.-> interview
+    interview -.-> debrief
+    study -.-> searchIndex
+    searchIndex -.-> reranker
+    study -.-> factory
+    interview -.-> factory
+    debrief -.-> graders
+    graders -.-> flash
+    setup -.-> material
+    material -.-> searchIndex
+    interview -.-> checkpointer
+    debrief -.-> candidateModel
+    candidateModel -.-> flashcards
+    memory -.-> personal
+    qasper -.-> searchMetrics
+    evaluation -.->|measures| app
+    app -.->|traces| phoenix
+
+    classDef built fill:#d1fae5,stroke:#047857,color:#064e3b
+    classDef review fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef planned fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray:5 3
+    classDef note fill:#ffffff,stroke:#9ca3af,color:#4b5563

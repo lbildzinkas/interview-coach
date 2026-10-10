@@ -27,3 +27,28 @@ jobs:
       # Same script developers run locally; see scripts/check.sh
       - name: Run all checks (ruff lint + format, pyright, pytest)
         run: ./scripts/check.sh
+
+  diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Node for the pinned mermaid-cli: https://github.com/actions/setup-node
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      # Installs exactly the versions in package-lock.json:
+      # https://docs.npmjs.com/cli/commands/npm-ci
+      - name: Install mermaid-cli
+        run: npm ci
+      # mermaid-cli renders in chrome-headless-shell; install the build the pinned Puppeteer
+      # expects, in case npm skipped Puppeteer's own download script:
+      # https://pptr.dev/browsers-api
+      - name: Install headless Chrome
+        run: npx puppeteer browsers install chrome-headless-shell
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+      # Renders every docs/architecture/*.mmd into a temporary folder and fails on a
+      # diagram that does not render, a missing PNG or a stale PNG.
+      - name: Check architecture diagrams
+        run: uv run python scripts/render_diagrams.py --check
