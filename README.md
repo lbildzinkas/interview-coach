@@ -67,7 +67,7 @@ every pull request and on pushes to `master`
 
 ### Local-only data
 
-Two folders hold data that never leaves your machine; their contents are
+Three folders hold data that never leaves your machine; their contents are
 git-ignored from the start:
 
 - `data/personal/` — personal data (your notes, transcripts, answers)
