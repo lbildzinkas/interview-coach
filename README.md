@@ -64,3 +64,14 @@ git-ignored from the start:
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+### Downloading the study material
+
+`coach setup` downloads the study material named in [`sources.yaml`](sources.yaml)
+into the git-ignored `data/study-material/` folder, each file pinned to a commit.
+It is safe to run twice: sources already downloaded are skipped. Credits are in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+```bash
+uv run coach setup
+```
