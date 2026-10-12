@@ -70,9 +70,14 @@ It is safe to run twice: sources already downloaded are skipped. Credits are in
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 The list covers system design, behavioural interviews and AI engineering
-(about 3 MB of English text, no images or translations). Sources with no
-licence are marked `local_only` and printed as "(local only)": read them on
-your machine, but never commit or share anything taken from them.
+(about 2 MB of English text, no images or translations), and holds only
+material whose licence allows sharing it.
+
+Personal sources whose licence does not allow sharing them, such as a
+repository with no licence, go in `sources.local.yaml` beside `sources.yaml`.
+It has the same schema, is git-ignored, and `coach setup` reads it when it is
+there. Mark such sources `local_only: true`: they are downloaded for personal
+study on your machine only, so never commit or share anything taken from them.
 
 ```bash
 uv run coach setup
