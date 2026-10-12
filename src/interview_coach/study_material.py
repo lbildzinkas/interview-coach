@@ -18,6 +18,9 @@ import yaml
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 SOURCES_FILE = Path("sources.yaml")
+# Optional and git-ignored: personal sources whose licence does not allow sharing
+# them, such as a repository with no licence, stay out of the public list.
+LOCAL_SOURCES_FILE = Path("sources.local.yaml")
 DATA_DIR = Path("data/study-material")
 # Written last, so a source counts as downloaded only once every file is in.
 STAMP_FILE = ".commit"
@@ -121,9 +124,27 @@ def download_source(source: Source, data_dir: Path = DATA_DIR) -> bool:
     return True
 
 
-def run_setup(sources_file: Path = SOURCES_FILE, data_dir: Path = DATA_DIR) -> None:
-    """Download every source in the list, printing one line per source."""
-    for source in load_sources(sources_file).sources:
+def load_all_sources(
+    sources_file: Path = SOURCES_FILE, local_file: Path = LOCAL_SOURCES_FILE
+) -> SourcesList:
+    """The committed list plus the optional local one, checked together.
+
+    Validating the merged list keeps names unique across both files, so a local
+    source can never overwrite a committed source's folder.
+    """
+    sources = list(load_sources(sources_file).sources)
+    if local_file.is_file():
+        sources += load_sources(local_file).sources
+    return SourcesList(sources=sources)
+
+
+def run_setup(
+    sources_file: Path = SOURCES_FILE,
+    data_dir: Path = DATA_DIR,
+    local_file: Path = LOCAL_SOURCES_FILE,
+) -> None:
+    """Download every source in both lists, printing one line per source."""
+    for source in load_all_sources(sources_file, local_file).sources:
         downloaded = download_source(source, data_dir)
         scope = " (local only)" if source.local_only else ""
         status = "downloaded" if downloaded else "already up to date"

@@ -21,6 +21,8 @@ dist/
 # Personal data
 data/personal/*
 !data/personal/.gitkeep
+# Personal study sources not licensed for sharing (same schema as sources.yaml)
+sources.local.yaml
 # Downloaded study material
 data/study-material/*
 !data/study-material/.gitkeep
